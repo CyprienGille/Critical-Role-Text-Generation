@@ -21,7 +21,7 @@ class CRprocessing:
         tokenizer_name="basic_english",
     ):
         """Preprocess the text files found in path directory
-        
+
         Does:
         Cleaning
         Bundling
@@ -30,10 +30,10 @@ class CRprocessing:
         Shipping to torch Tensors
 
         Refer to the documentations of each step for more information
-        
+
         Arguments:
             string_path {str} -- [the path to the folder containing the crT txt files to process]
-        
+
         Keyword Arguments:
             n_sentences_per_bundle {number} -- [max number of sentences to put in a bundle] (default: {400})
             prop_train {number} -- [proportion of the data to use for the train set] (default: {.7})
@@ -56,7 +56,7 @@ class CRprocessing:
     def CRcleaning(self):
         """Reads the data from the provided folder and ships it to a list of string
         Cleans line breaks and double line breaks
-        
+
         Provides attribute ep_texts for raw episode string data
         """
         for text_file in self.data_dir.iterdir():
@@ -66,7 +66,7 @@ class CRprocessing:
 
     def CRbundling(self):
         """Splits episodes without breaking sentences, and then bundles them into lists of string
-        
+
         Provides attribute text_data for list of bundles
         """
         for ep in self.ep_texts:
@@ -80,7 +80,7 @@ class CRprocessing:
     def shuffle_split(self, l, prop=0.5):
         """
         Shuffles the data in l before splitting it in two lists according to prop
-        
+
         Args:
             prop {float} -- the proportion of data to be stored in the first list returned
         """
@@ -92,7 +92,7 @@ class CRprocessing:
 
     def CRtrain_test_eval(self):
         """Shuffles and splits original data into attributes train_set, test_set, and eval_set
-        
+
         cf shuffle_split
         """
 
@@ -103,9 +103,9 @@ class CRprocessing:
 
     def CRcreate_vocab(self, set_for_vocab):
         """builds this preprocessing instance's vocabulary
-        
+
         Provides attribute vocab for translation in each direction (cf torchtext vocab object documentation)
-        
+
         Arguments:
             set_for_vocab {iterable} -- [the set of text to use to build the vocabulary]
         """
@@ -115,7 +115,7 @@ class CRprocessing:
     def encoding_to_torch(self, text_iter):
         """
         Tokenizes, Encodes, and ships to a torch.tensor the data from an iterable set of text
-        
+
         Note: the vocabulary needed for the encoding should have been built before calling this function
         """
         data = [
@@ -132,10 +132,17 @@ class CRprocessing:
 
     def CRtext_to_torch(self):
         """encodes and ships to tensors the three sets
-        
+
         Provides train_data_encoded, test_data_encoded, eval_data_encoded to use for training or batching
         """
         self.train_data_encoded = self.encoding_to_torch(self.train_set)
         self.eval_data_encoded = self.encoding_to_torch(self.eval_set)
         self.test_data_encoded = self.encoding_to_torch(self.test_set)
 
+
+# cleaning
+# encode text (AE?)
+# bundle text in chunks
+# Save in a dir
+# Dataset
+# DataLoader ? (training code)
