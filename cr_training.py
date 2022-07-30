@@ -3,8 +3,7 @@ import torch.nn as nn
 import math
 import time
 from cr_proc import CRprocessing
-from cr_gen import CRTransformer
-
+from cr_models import CRTransformer
 
 # use the gpu if available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -19,7 +18,7 @@ def batchify(data, nb_batches):
     """
     Splits data into nb_batches, adding a new dimension
     Note: trims any remainder data that wouldn't fit
-    
+
     Args:
         data {torch.Tensor} -- the data to be spread
         nb_batches {int} -- the size of the batch dimension
@@ -31,9 +30,9 @@ def batchify(data, nb_batches):
 
 
 def get_batch(source, i):
-    """returns a sequence (called "batch" during training) for all data batches (that are along dim 0) 
+    """returns a sequence (called "batch" during training) for all data batches (that are along dim 0)
     Also returns an offset-1 sequence for output-target loss computation
-    
+
     Arguments:
         source {slicable} -- [the data to get the batch from]
         i {int} -- [starting pos of the batch]
@@ -188,4 +187,3 @@ print("=" * 89)
 torch.save(
     best_model.state_dict(), "best_model.pt"
 )  # saving the model to reuse it for inference later
-
