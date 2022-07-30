@@ -14,7 +14,8 @@ class CRDataset(Dataset):
     def __getitem__(self, index) -> T.tensor:
         path = str(self.files[index % len(self.files)])
         bundle_array = np.load(path)
-        return T.from_numpy(bundle_array)
+        src, tgt = bundle_array[:-1], bundle_array[1:]
+        return T.from_numpy(src), T.from_numpy(tgt)
 
     def __len__(self) -> int:
         return len(self.files)

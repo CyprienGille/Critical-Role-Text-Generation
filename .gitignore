@@ -2,3 +2,5 @@ __pycache__
 .vscode
 data/ready
 data/vocab.pth
+plots/
+logs/
