@@ -1,5 +1,9 @@
+#%%
 import os
 from pathlib import Path
+import re
+import numpy as np
+from torch import save
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from itertools import chain
@@ -49,30 +53,55 @@ def flatten_list(outer_list):
     return list(chain(*outer_list))
 
 
-def split_into_bundles(episodes_list, n_sentences_per_bundle):
-    """Splits the input into bundles without breaking sentences"""
+def split_into_bundles(all_tokens, wpb):
+    """Splits the input into bundles
+    Note: this cuts off some words at the end to avoid an incomplete bundle"""
+    return [all_tokens[i : i + wpb] for i in range(len(all_tokens) // wpb)]
+
+
+def save_bundle(bundle, index, path):
+    np.save(f"{path}bundle_{index}.npy", np.array(bundle))
 
 
 def full_preprocessing_cycle(
-    data_dir, n_sentences_per_bundle, output_dir="../data/ready"
+    data_dir, words_per_bundle=2**10, output_dir="../data/ready/"
 ):
     # cleaning
-    # encode text (AE?)
+    # encode text
     # bundle text in chunks
     # Save in a dir
 
     os.makedirs(output_dir, exist_ok=True)
+
+    print("Cleaning episodes...")
     episodes_list = clean_episodes(data_dir)
-    tokenized_eps = [TOKENIZER(episode) for episode in episodes_list]
-    all_tokens = flatten_list(tokenized_eps)
-    vocab = build_vocab_from_iterator(
-        iterator=iter(all_tokens), min_freq=1, max_tokens=None, specials="unk"
-    )
-    bundled = split_into_bundles(tokenized_eps)
+
+    print("Tokenizing episodes...")
+    tokenized_e = [TOKENIZER(ep) for ep in episodes_list]
+    all_tokens = flatten_list(tokenized_e)
+
+    print("Bundling words...")
+    bundled_data = split_into_bundles(all_tokens, wpb=words_per_bundle)
+
+    print("Building vocab...")
+    # build vocab from all words
+    vocab = build_vocab_from_iterator([all_tokens])
+    save(vocab, "../data/vocab.pth")
+    print(f"Saved vocab with size : {len(vocab)}")
+
+    print("Encoding bundles...")
+    encoded_b = [[vocab[word] for word in bundle] for bundle in bundled_data]
+
+    print("Saving bundles...")
+    for i, bundle in enumerate(encoded_b):
+        save_bundle(bundle, i, path=output_dir)
 
     print(f"Saved preprocessed data to {output_dir}")
 
 
+#%%
 if __name__ == "__main__":
     data_dir = "../data/original/"
     full_preprocessing_cycle(data_dir)
+
+# %%
