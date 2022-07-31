@@ -5,3 +5,4 @@ data/vocab.pth
 plots/
 logs/
 temp.py
+data/last_model.pth
