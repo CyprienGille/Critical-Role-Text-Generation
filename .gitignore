@@ -4,3 +4,4 @@ data/ready
 data/vocab.pth
 plots/
 logs/
+temp.py
