@@ -1,6 +1,6 @@
 # Text Generation based on Critical Role scripts
 
-This language modeling project teaches a Transformer network to continue sentences, by training it on a collection of transcripts of the live show Critical Role.
+This language modeling project teaches a Transformer network to continue sentences, by training it on a collection of transcripts of the live show [Critical Role](https://critrole.com/).
 
 ## The Dataset
 Our dataset is comprised of all of the episode transcripts realised by the team over at CRTranscript. It contains *180 files*, for a total of over *7 million words*, with a vocabulary of *52123 different tokens*.
