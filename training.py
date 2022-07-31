@@ -1,7 +1,8 @@
+#%%
 import os
 from tqdm import tqdm
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
 import torch as T
 from torch.utils.data import DataLoader
 
@@ -9,10 +10,12 @@ from datasets import CRDataset
 from models import CRTransformer
 
 # params
-N_EPOCHS = 30
+N_EPOCHS = 6
 LR = 1
-TRAIN_PROP = 0.85
-BS = 8
+TRAIN_PROP = 0.8
+BS_TRAIN = 30
+BS_TEST = 22
+losses_file = "CR_losses.csv"
 
 ready_dir = "data/ready/"
 
@@ -30,14 +33,15 @@ test_files = list(map(all_files.__getitem__, test_idx))
 
 train_dataset = CRDataset(root=ready_dir, files_list=train_files)
 test_dataset = CRDataset(root=ready_dir, files_list=test_files)
-train_dl = DataLoader(train_dataset, batch_size=BS, shuffle=True)
-test_dl = DataLoader(test_dataset, batch_size=BS, shuffle=False)
+train_dl = DataLoader(train_dataset, batch_size=BS_TRAIN, shuffle=True)
+test_dl = DataLoader(test_dataset, batch_size=BS_TEST, shuffle=False)
 
 # model and training stuff (loss, optim, sched)
 model = CRTransformer(device=device).to(device)
 criterion = T.nn.CrossEntropyLoss()
 optimizer = T.optim.SGD(model.parameters(), lr=LR)
 
+df_losses = pd.DataFrame(index=range(N_EPOCHS))
 # training loop w/ val
 for n in range(N_EPOCHS):
     model.train()
@@ -45,8 +49,8 @@ for n in range(N_EPOCHS):
     test_loss_per_epoch = 0
     for b_i, batch in enumerate(tqdm(train_dl)):
         src, tgt = batch
-        src = src.to(device)
-        tgt = tgt.to(device)
+        src = src.to(device=device)
+        tgt = tgt.to(device=device)
 
         if b_i == 0:
             out, out_indexes = model(src, tgt, src_masked=False, tgt_masked=False)
@@ -56,7 +60,8 @@ for n in range(N_EPOCHS):
             )
         prev_outputs = out_indexes.clone().detach()
 
-        loss = criterion(out, tgt)
+        tgt = tgt.to(dtype=T.long)  # for loss computation
+        loss = criterion(out[:, -1, :], tgt[:, -1])
         loss.backward()
         T.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         optimizer.step()
@@ -64,10 +69,13 @@ for n in range(N_EPOCHS):
 
         loss_per_epoch += loss.item()
     loss_per_epoch /= len(train_dl)
+    df_losses.at[n, "Training loss"] = loss_per_epoch
 
     model.eval()
     for b_i, batch in enumerate(test_dl):
         src, tgt = batch
+        src = src.to(device=device)
+        tgt = tgt.to(device=device)
 
         if b_i == 0:
             _, out_indexes = model(src, tgt, src_masked=True, tgt_masked=True)
@@ -79,8 +87,10 @@ for n in range(N_EPOCHS):
         test_loss_per_epoch += loss.item()
     test_loss_per_epoch /= len(test_dl)
 
+    df_losses.at[n, "Test loss"] = test_loss_per_epoch
     print(
         f"Epoch {n} --- Training Loss:{loss_per_epoch:.4f} --- Test Loss:{test_loss_per_epoch:.4f}"
     )
 
-# saving the best model and the logs ?
+df_losses.to_csv("logs/" + losses_file, index_label="Epochs")
+T.save(model.state_dict(), "last_model.pth")

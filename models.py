@@ -36,8 +36,8 @@ class CRTransformer(nn.Module):
     def __init__(
         self,
         vocab_size=52123,
-        n_features=2**10,
-        nheads=8,
+        n_features=130,
+        nheads=10,
         n_enc_layers=6,
         n_dec_layers=6,
         dim_feedforward=4096,
