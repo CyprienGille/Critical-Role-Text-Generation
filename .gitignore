@@ -6,3 +6,4 @@ plots/
 logs/
 temp.py
 data/last_model.pth
+old/
