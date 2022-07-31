@@ -13,8 +13,8 @@ from models import CRTransformer
 N_EPOCHS = 6
 LR = 1
 TRAIN_PROP = 0.8
-BS_TRAIN = 30
-BS_TEST = 22
+BS_TRAIN = 28
+BS_TEST = 13
 losses_file = "CR_losses.csv"
 
 ready_dir = "data/ready/"
@@ -78,12 +78,15 @@ for n in range(N_EPOCHS):
         tgt = tgt.to(device=device)
 
         if b_i == 0:
-            _, out_indexes = model(src, tgt, src_masked=True, tgt_masked=True)
+            out, out_indexes = model(src, tgt, src_masked=False, tgt_masked=False)
         else:
-            _, out_indexes = model(src, prev_outputs, src_masked=True, tgt_masked=True)
+            out, out_indexes = model(
+                src, prev_outputs, src_masked=False, tgt_masked=False
+            )
         prev_outputs = out_indexes.clone().detach()
 
-        loss = criterion(out_indexes, tgt)
+        tgt = tgt.to(dtype=T.long)  # for loss computation
+        loss = criterion(out[:, -1, :], tgt[:, -1])
         test_loss_per_epoch += loss.item()
     test_loss_per_epoch /= len(test_dl)
 

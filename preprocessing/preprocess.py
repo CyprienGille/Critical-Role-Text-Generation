@@ -64,7 +64,7 @@ def save_bundle(bundle, index, path):
 
 
 def full_preprocessing_cycle(
-    data_dir, words_per_bundle=130, output_dir="../data/ready/"
+    data_dir, words_per_bundle=133, output_dir="../data/ready/"
 ):
     # cleaning
     # encode text
