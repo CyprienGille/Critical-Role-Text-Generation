@@ -1,6 +1,6 @@
 ![image](https://user-images.githubusercontent.com/83751996/182046417-b53b556f-4ae0-44fc-9c7d-3ac72d39a299.png)
 
-# Text Generation based on Critical Role scripts
+# Text Generation based on Critical Role scripts 📺
 
 This language modeling project teaches a [Transformer](https://en.wikipedia.org/wiki/Transformer_(machine_learning_model)) network to continue sentences, by training it on a collection of transcripts of the live show [Critical Role](https://critrole.com/).
 
