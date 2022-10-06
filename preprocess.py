@@ -16,7 +16,7 @@ def split_by_speaker(content: str):
     return tirades
 
 
-def get_processed_strings(data_dir: str):
+def get_processed_strings(data_dir: str, min_len=None):
     processed = []
     for text_file in Path(data_dir).iterdir():
         # read episode file
@@ -25,6 +25,11 @@ def get_processed_strings(data_dir: str):
         content = content.replace("\n\n", " ").replace("\n", " ")
 
         tirades = split_by_speaker(content)
+
+        if min_len is not None:
+            # if we want to filter out sentences that are less than min_len words long
+            tirades = [t for t in tirades if len(t.split(" ")) > min_len]
+
         # add all tirades to the processed strings list
         processed.extend(tirades)
 

@@ -16,7 +16,7 @@ from tqdm import tqdm
 
 #%%
 # Script constants
-VERBOSE = True
+VERBOSE = False
 
 
 #%%
@@ -65,7 +65,7 @@ class CRDataset(Dataset):
 
 #%%
 # Preprocess data
-str_list = get_processed_strings("data/small/")
+str_list = get_processed_strings("data/original/", min_len=10)
 # # max_length = max([len(tokenizer.encode(txt)) for txt in str_list])
 max_length = 4188  # max length of the current dataset - no need to perform the previous line every time
 if VERBOSE:
@@ -74,7 +74,7 @@ if VERBOSE:
 
 #%%
 # Instantiate and split the dataset
-TRAIN_PROP = 0.85
+TRAIN_PROP = 0.95
 
 print("Initialising Dataset...")
 dataset = CRDataset(str_list, tokenizer, max_length)
@@ -109,7 +109,8 @@ training_args = TrainingArguments(
     output_dir="./logs/",
     per_device_train_batch_size=3,
     per_device_eval_batch_size=3,
-    num_train_epochs=3,
+    num_train_epochs=1,
+    save_strategy="steps",
     save_total_limit=5,
     # evaluation_strategy="epoch",
     optim="adamw_torch",
