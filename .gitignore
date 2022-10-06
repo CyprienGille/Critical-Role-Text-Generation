@@ -1,9 +1,4 @@
 __pycache__
 .vscode
-data/ready
-data/vocab.pth
-plots/
 logs/
 temp.py
-data/last_model.pth
-old/
