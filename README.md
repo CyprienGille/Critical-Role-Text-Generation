@@ -9,6 +9,8 @@ Our dataset is comprised of all of the episode transcripts realised by the team 
  
 
 ## The Model
-The Model uses a [PyTorch Transformer](https://pytorch.org/docs/stable/generated/torch.nn.Transformer.html), full with both its Encoder and Decoder sections. It also contains a positional encoding module, as well as an Embedder. All of those can be found in the `models.py` file.
+This project uses a [PyTorch Transformer](https://pytorch.org/docs/stable/generated/torch.nn.Transformer.html) : it fine-tunes an instance of GPT2 using the [HuggingFace API](https://huggingface.co/docs/transformers/index). 
 
 
+## The App
+A [Gradio App](https://www.gradio.app/docs/) showcasing the capabilities of the trained model is available at : https://huggingface.co/spaces/Callimethee/Imagine-CR . Have fun with it!
