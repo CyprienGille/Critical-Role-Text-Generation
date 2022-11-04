@@ -66,7 +66,7 @@ class CRDataset(Dataset):
 #%%
 # Preprocess data
 str_list = get_processed_strings("data/original/", min_len=10)
-# # max_length = max([len(tokenizer.encode(txt)) for txt in str_list])
+# max_length = max([len(tokenizer.encode(txt)) for txt in str_list])
 max_length = 4188  # max length of the current dataset - no need to perform the previous line every time
 if VERBOSE:
     print(f"The longest tirade is {max_length} tokens long.")
@@ -104,7 +104,6 @@ model.to(device)
 
 collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
-
 training_args = TrainingArguments(
     output_dir="./logs/",
     per_device_train_batch_size=3,
@@ -128,5 +127,3 @@ trainer = Trainer(
 #%%
 # Training
 trainer.train(resume_from_checkpoint=False)
-
-#%%

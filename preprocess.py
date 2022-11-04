@@ -3,6 +3,7 @@ import re
 
 
 def split_by_speaker(content: str):
+    # this regular expression finds a string of more than one capitalized letter, followed by a ':'
     all_speakers = list(re.finditer(r"([A-Z])+:", content))
     tirades = []
     for match_i in range(len(all_speakers) - 1):
@@ -23,7 +24,7 @@ def get_processed_strings(data_dir: str, min_len=None):
         content = text_file.read_text(encoding="utf-8")
         # remove line breaks
         content = content.replace("\n\n", " ").replace("\n", " ")
-
+        # split by person speaking
         tirades = split_by_speaker(content)
 
         if min_len is not None:
